@@ -4,10 +4,14 @@ import jwt from "jsonwebtoken";
 import { errorHandler } from "../utils/error.js";
 
 export const signUp = async (req, res, next) => {
-  const { email, name, password } = req.body;
+  const { email, fullName, password } = req.body;
 
-  if (!email || !name || !password) {
-    next(errorHandler(400, "All fields are required")); // pass control to the next middleware (errorHandler)
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    return res
+      .status(409)
+      .json({ message: "User with this email already exists" });
   }
 
   const salt = bcrypt.genSaltSync(10);
@@ -15,7 +19,7 @@ export const signUp = async (req, res, next) => {
 
   const newUser = new User({
     email,
-    name,
+    fullName,
     password: hashPassword,
   });
 
