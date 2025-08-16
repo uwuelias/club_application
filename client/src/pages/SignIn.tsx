@@ -21,25 +21,25 @@ const formSchema = z.object({
     email: z.email().regex(/^[A-Za-z0-9._%+-]+@binghamton\.edu$/, {
         message: "Must be a valid Binghamton University email",
     }),
-    fullName: z.string().min(1, { message: "Enter your full name" }),
     password: z.string().min(8, { message: "Password must be at least 8 characters long" }),
 })
 
-const SignUp = () => {
+const SignIn = () => {
+    
     const navigate = useNavigate()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             email: "",
-            fullName: "",
             password: "",
         }
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        
         try {
-            const res = await fetch("http://localhost:3000/api/auth/signup", {
+            const res = await fetch("http://localhost:3000/api/auth/signin", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(values)
@@ -48,16 +48,13 @@ const SignUp = () => {
             const data = await res.json()
 
             if (!res.ok) {
-                if (res.status === 409) {
-                    toast.error(data.message || "User with this email already exists")
-                } else {
-                    toast.error(data.message || "Something went wrong")
-                }
-                return
+                toast.error(data.message || "Invalid email or password");
+                return;
             }
 
-            toast.success("Account created successfully")
-            navigate("/signin")
+            toast.success("Signed in successfully!")
+            navigate('/')
+
         } catch (e: unknown) {
             if (e instanceof Error) {
                 toast.error(`An error has occurred: ${e.message}`)
@@ -65,29 +62,18 @@ const SignUp = () => {
         }
     }
 
-    return (
-        <main className='flex flex-col items-center justify-center min-h-screen'>
-            <h2 className='font-bold text-xl'>Sign up</h2>
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 w-full max-w-md'>
+  return (
+    <main className='flex flex-col items-center justify-center min-h-screen'>
+        <h2 className='font-bold text-xl'>Sign in</h2>
+        <Form {...form}>
+            <form className='space-y-4 w-full max-w-md' onSubmit={form.handleSubmit(onSubmit)}>
 
-                    {/*email section*/}
+                {/*email section*/}
                     <FormField control={form.control} name='email' render={({ field }) => (
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
                                 <Input placeholder="jdoe@binghamton.edu" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
-
-                    {/*full name section*/}
-                    <FormField control={form.control} name='fullName' render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Full Name</FormLabel>
-                            <FormControl>
-                                <Input placeholder='John Doe' {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -104,14 +90,14 @@ const SignUp = () => {
                         </FormItem>
                     )} />
 
-                    <p className='italic text-center'>Already have an account? <Link to="/signin" className='hover:underline hover:cursor-pointer'>Sign in</Link></p>
+                    <p className='italic text-center'>Don&apos;t have an account? <Link to="/signup" className='hover:underline hover:cursor-pointer'>Sign up</Link></p>
                     <div className="flex justify-center">
                         <Button type='submit' className='hover:cursor-pointer'>Submit</Button>
                     </div>
-                </form>
-            </Form>
-        </main>
-    )
+            </form>
+        </Form>
+    </main>
+  )
 }
 
-export default SignUp
+export default SignIn

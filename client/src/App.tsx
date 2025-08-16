@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router"
 import { ThemeProvider } from "./components/theme-provider"
+import { Toaster } from "sonner"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import Home from "./pages/Home"
 import SignUp from "./pages/SignUp"
-import { Toaster } from "sonner"
+import SignIn from "./pages/SignIn"
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/signup' element={<SignUp />} />
+          <Route path='/signin' element={<SignIn />} />
         </Routes>
         <Footer />
         <Toaster />
